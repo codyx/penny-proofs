@@ -10,6 +10,8 @@ path = "src/bin/verified_airdrop.rs"
 [workspace]
 
 [dependencies]
+hex = "0.4.3"
+tiny-keccak = { version = "2.0.2", features = ["keccak"] }
 
 # Force the `compile-time-rng` feature, to prevent `getrandom` from being used.
 ahash = { version = "0.8", default-features = false, features = [
