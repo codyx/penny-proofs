@@ -17,12 +17,12 @@
 // to your deployed app contract.
 
 use alloy_primitives::Address;
-use alloy_sol_types::{sol, SolCall};
+// use alloy_sol_types::sol;
 use anyhow::Result;
-use apps::TxSender;
+// use apps::TxSender;
 use clap::Parser;
-use risc0_ethereum_contracts::groth16::encode;
-use risc0_steel::{config::ETH_SEPOLIA_CHAIN_SPEC, ethereum::EthEvmEnv, Contract, EvmBlockHeader};
+// use risc0_ethereum_contracts::groth16::encode;
+use risc0_steel::{config::ETH_SEPOLIA_CHAIN_SPEC, ethereum::EthEvmEnv};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 use tracing_subscriber::EnvFilter;
 use verified_airdrop::VERIFIED_AIRDROP_ELF;
@@ -81,29 +81,30 @@ fn main() -> Result<()> {
         )?
         .receipt;
     println!("proving...done");
+    println!("receipt: {:?}", receipt);
 
     // Create a new `TxSender`.
-    let tx_sender = TxSender::new(
-        args.chain_id,
-        &args.rpc_url,
-        &args.eth_wallet_private_key,
-        &args.contract.to_string(),
-    )?;
+    // let tx_sender = TxSender::new(
+    //     args.chain_id,
+    //     &args.rpc_url,
+    //     &args.eth_wallet_private_key,
+    //     &args.contract.to_string(),
+    // )?;
 
     // Encode the groth16 seal with the selector
-    let seal = encode(receipt.inner.groth16()?.seal.clone())?;
+    // let seal = encode(receipt.inner.groth16()?.seal.clone())?;
 
-    let calldata = IPennyProofVerifiedAirdrop::buildMerkleTree {
-        journalData: receipt.journal.bytes.into(),
-        seal: seal.into(),
-    }
-    .abi_encode();
+    // let calldata = IPennyProofVerifiedAirdrop::buildMerkleTree {
+    //     journalData: receipt.journal.bytes.into(),
+    //     seal: seal.into(),
+    // }
+    // .abi_encode();
 
     // Send the calldata to Ethereum.
-    println!("sending tx...");
-    let runtime = tokio::runtime::Runtime::new()?;
-    runtime.block_on(tx_sender.send(calldata))?;
-    println!("sending tx...done");
+    // println!("sending tx...");
+    // let runtime = tokio::runtime::Runtime::new()?;
+    // runtime.block_on(tx_sender.send(calldata))?;
+    // println!("sending tx...done");
 
     Ok(())
 }

@@ -15,9 +15,9 @@
 #![allow(unused_doc_comments)]
 #![no_main]
 
-use alloy_primitives::Address;
+// use alloy_primitives::Address;
 use alloy_sol_types::{sol, SolValue};
-use risc0_steel::{config::ETH_SEPOLIA_CHAIN_SPEC, ethereum::EthEvmInput, Contract, SolCommitment};
+use risc0_steel::{config::ETH_SEPOLIA_CHAIN_SPEC, ethereum::EthEvmInput, SolCommitment};
 use risc0_zkvm::guest::env;
 
 risc0_zkvm::guest::entry!(main);
@@ -26,7 +26,6 @@ risc0_zkvm::guest::entry!(main);
 sol! {
     struct Journal {
         SolCommitment commitment;
-        address contractAddress;
     }
 }
 
@@ -42,7 +41,6 @@ fn main() {
     // Commit the block hash and number used when deriving `view_call_env` to the journal.
     let journal = Journal {
         commitment: env.block_commitment(),
-        contractAddress: contract,
     };
     env::commit_slice(&journal.abi_encode());
 }
