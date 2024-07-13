@@ -17,13 +17,13 @@
 
 pragma solidity ^0.8.9;
 
-import {SafeCast} from "openzeppelin/contracts/utils/math/SafeCast.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import {ControlID} from "./ControlID.sol";
-import {Groth16Verifier} from "./Groth16Verifier.sol";
-import {ExitCode, IRiscZeroVerifier, Output, OutputLib, Receipt, ReceiptClaim, ReceiptClaimLib, SystemExitCode, VerificationFailed} from "../IRiscZeroVerifier.sol";
-import {StructHash} from "../StructHash.sol";
-import {reverseByteOrderUint256, reverseByteOrderUint32} from "../Util.sol";
+import { ControlID } from "./ControlID.sol";
+import { Groth16Verifier } from "./Groth16Verifier.sol";
+import { ExitCode, IRiscZeroVerifier, Output, OutputLib, Receipt, ReceiptClaim, ReceiptClaimLib, SystemExitCode, VerificationFailed } from "../interfaces/IRiscZeroVerifier.sol";
+import { StructHash } from "../StructHash.sol";
+import { reverseByteOrderUint256, reverseByteOrderUint32 } from "../Util.sol";
 
 /// @notice A Groth16 seal over the claimed receipt claim.
 struct Seal {
@@ -89,16 +89,9 @@ contract RiscZeroGroth16Verifier is IRiscZeroVerifier, Groth16Verifier {
                     // down
                     sha256(abi.encodePacked(alphax, alphay)),
                     sha256(abi.encodePacked(betax1, betax2, betay1, betay2)),
-                    sha256(
-                        abi.encodePacked(gammax1, gammax2, gammay1, gammay2)
-                    ),
-                    sha256(
-                        abi.encodePacked(deltax1, deltax2, deltay1, deltay2)
-                    ),
-                    StructHash.taggedList(
-                        sha256("risc0_groth16.VerifyingKey.IC"),
-                        ic_digests
-                    ),
+                    sha256(abi.encodePacked(gammax1, gammax2, gammay1, gammay2)),
+                    sha256(abi.encodePacked(deltax1, deltax2, deltay1, deltay2)),
+                    StructHash.taggedList(sha256("risc0_groth16.VerifyingKey.IC"), ic_digests),
                     // down length
                     uint16(5) << 8
                 )
@@ -129,23 +122,14 @@ contract RiscZeroGroth16Verifier is IRiscZeroVerifier, Groth16Verifier {
     /// @dev RISC Zero's Circom verifier circuit takes each of two hash digests in two 128-bit
     /// chunks. These values can be derived from the digest by splitting the digest in half and
     /// then reversing the bytes of each.
-    function splitDigest(
-        bytes32 digest
-    ) internal pure returns (bytes16, bytes16) {
+    function splitDigest(bytes32 digest) internal pure returns (bytes16, bytes16) {
         uint256 reversed = reverseByteOrderUint256(uint256(digest));
         return (bytes16(uint128(reversed)), bytes16(uint128(reversed >> 128)));
     }
 
     /// @inheritdoc IRiscZeroVerifier
-    function verify(
-        bytes calldata seal,
-        bytes32 imageId,
-        bytes32 journalDigest
-    ) external view {
-        _verifyIntegrity(
-            seal,
-            ReceiptClaimLib.ok(imageId, journalDigest).digest()
-        );
+    function verify(bytes calldata seal, bytes32 imageId, bytes32 journalDigest) external view {
+        _verifyIntegrity(seal, ReceiptClaimLib.ok(imageId, journalDigest).digest());
     }
 
     /// @inheritdoc IRiscZeroVerifier
@@ -154,18 +138,12 @@ contract RiscZeroGroth16Verifier is IRiscZeroVerifier, Groth16Verifier {
     }
 
     /// @notice internal implementation of verifyIntegrity, factored to avoid copying calldata bytes to memory.
-    function _verifyIntegrity(
-        bytes calldata seal,
-        bytes32 claimDigest
-    ) internal view {
+    function _verifyIntegrity(bytes calldata seal, bytes32 claimDigest) internal view {
         // Check that the seal has a matching selector. Mismatch generally indicates that the
         // prover and this verifier are using different parameters, and so the verification
         // will not succeed.
         if (SELECTOR != bytes4(seal[:4])) {
-            revert SelectorMismatch({
-                received: bytes4(seal[:4]),
-                expected: SELECTOR
-            });
+            revert SelectorMismatch({ received: bytes4(seal[:4]), expected: SELECTOR });
         }
 
         // Run the Groth16 verify procedure.
