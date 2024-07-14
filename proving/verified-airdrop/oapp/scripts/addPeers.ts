@@ -4,9 +4,9 @@ async function main() {
     const { deployer } = await getNamedAccounts()
 
     // Define the addresses for the deployed contracts
-    const myOAppAddressRemote = '0xd842f6bF30E5DA6FcDBE17E7b769969DB556cD36'
+    const myOAppAddressRemote = '0x6A78bd5781024f2012d3E6Aa3199dF477cff423C'
 
-    const myOAppAddressLocal = '0x1cDc3466cA1E4443B0042fFAA6Fe7B9aa17EF452'
+    const myOAppAddressLocal = '0x137f0Ae7C609D7a55c03FdaD0F0F9798E1e47585'
 
     // Get the contract factory for MyOApp
     const MyOAppLocal = await ethers.getContractFactory('PennyProofVerfiedAirdrop', deployer)
