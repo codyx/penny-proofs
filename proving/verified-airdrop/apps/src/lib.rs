@@ -47,6 +47,7 @@ impl TxSender {
             .chain_id(self.chain_id)
             .to(self.contract)
             .from(self.client.address())
+            .value(1 * 10u64.pow(18))
             .data(calldata);
 
         log::info!("Transaction request: {:?}", &tx);
