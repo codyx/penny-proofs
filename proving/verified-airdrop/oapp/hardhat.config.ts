@@ -69,6 +69,11 @@ const config: HardhatUserConfig = {
             url: process.env.RPC_URL_AMOY || 'https://polygon-amoy-bor-rpc.publicnode.com',
             accounts,
         },
+        cardona: {
+            eid: EndpointId.ZKPOLYGONSEP_V2_TESTNET,
+            url: process.env.RPC_URL_CARDONA || 'https://rpc.cardona.zkevm-rpc.com',
+            accounts,
+        },
     },
     etherscan: {
         apiKey: process.env.ETHERSCAN_API_KEY,
