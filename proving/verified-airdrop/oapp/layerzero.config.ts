@@ -17,6 +17,10 @@ const amoyContract: OmniPointHardhat = {
     contractName: 'MyOApp',
 }
 
+const cardonaContract: OmniPointHardhat = {
+    eid: EndpointId.AMOY_V2_TESTNET,
+    contractName: 'MyOApp',
+}
 const config: OAppOmniGraphHardhat = {
     contracts: [
         {

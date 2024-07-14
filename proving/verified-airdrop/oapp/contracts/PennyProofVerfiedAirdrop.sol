@@ -18,10 +18,13 @@ import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 contract PennyProofVerfiedAirdrop is OApp, IPennyProofVerfiedAirdrop {
     constructor(address _endpoint, address _delegate, address _verifier) OApp(_endpoint, _delegate) Ownable(_delegate) {
         verifier = IRiscZeroVerifier(_verifier);
+        array = [10, 1000, 100000];
     }
 
     using OptionsBuilder for bytes;
     using Strings for bytes32;
+
+    uint256[] private array;
 
     struct Journal {
         Steel.Commitment commitment;
@@ -55,21 +58,29 @@ contract PennyProofVerfiedAirdrop is OApp, IPennyProofVerfiedAirdrop {
     }
 
     /**
+     * @dev Read all elements from the array
+     * @return array The entire array of bytes32 values
+     */
+    function readElements() external view returns (uint256[] memory) {
+        return array;
+    }
+
+    /**
      * @notice Quotes the gas needed to pay for the full omnichain transaction in native gas or ZRO token.
      * @param _dstEid Destination chain's endpoint ID.
      * @param _message The message.
      * @param _options Message execution options (e.g., for sending gas to destination).
      * @param _payInLzToken Whether to return fee in ZRO token.
-     * @return fee A `MessagingFee` struct containing the calculated gas fee in either the native token or ZRO token.
+     * @return f A `MessagingFee` struct containing the calculated gas fee in either the native token or ZRO token.
      */
     function quote(
         uint32 _dstEid,
         string memory _message,
         bytes memory _options,
         bool _payInLzToken
-    ) public view returns (MessagingFee memory fee) {
+    ) public view returns (MessagingFee memory f) {
         bytes memory payload = abi.encode(_message);
-        fee = _quote(_dstEid, payload, _options, _payInLzToken);
+        f = _quote(_dstEid, payload, _options, _payInLzToken);
     }
 
     function createLzReceiveOption(uint128 _gas, uint128 _value) public pure returns (bytes memory) {
@@ -78,7 +89,7 @@ contract PennyProofVerfiedAirdrop is OApp, IPennyProofVerfiedAirdrop {
 
     /// @notice Removes duplicates (if any) from the original array and returns the new array.
     /// @dev The Steel proof must be generated off-chain using RISC0-zkVM and submitted here.
-    function buildMerkleTree(bytes calldata journalData, bytes calldata seal) external onlyOwner {
+    function buildMerkleTree(bytes calldata journalData, bytes calldata seal) external payable onlyOwner {
         Journal memory journal = abi.decode(journalData, (Journal));
 
         require(Steel.validateCommitment(journal.commitment), "Invalid commitment");
@@ -87,20 +98,28 @@ contract PennyProofVerfiedAirdrop is OApp, IPennyProofVerfiedAirdrop {
         bytes32 journalHash = sha256(journalData);
         verifier.verify(seal, PennyProofVerfiedAirdrop.imageId, journalHash);
 
-        MessagingFee memory fee = quote(
-            eidSepolia,
-            Strings.toHexString(uint256(bytes32(0x0))),
-            createLzReceiveOption(0, 0),
-            false
-        );
+        // MessagingFee memory fee = quote(
+        //     eidSepolia,
+        //     Strings.toHexString(uint256(bytes32(0x0))),
+        //     createLzReceiveOption(0, 0),
+        //     false
+        // );
 
         //send message via lz
-        bytes memory _options = createLzReceiveOption(uint128(fee.nativeFee), 0);
+        //    bytes memory _options = createLzReceiveOption(fee, 0);
 
         // convert journal.merkleRootHash to bytes
 
         // string memory message = Strings.toHexString(uint256(journal.merkleRootHash));
-        send(eidSepolia, Strings.toHexString(uint256(journal.merkleRootHash)), _options);
+        //   send(eidSepolia, Strings.toHexString(uint256(journal.merkleRootHash)), _options);
+
+        _lzSend(
+            eidSepolia,
+            abi.encode(journal.merkleRootHash),
+            createLzReceiveOption(200000, 0),
+            MessagingFee(msg.value, 0),
+            payable(msg.sender)
+        );
     }
 
     // function endpoint() external view override returns (ILayerZeroEndpointV2 iEndpoint) {}

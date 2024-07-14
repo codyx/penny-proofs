@@ -20,5 +20,5 @@ pragma solidity ^0.8.20;
 
 library ImageID {
     bytes32 public constant VERIFIED_AIRDROP_ID =
-        bytes32(0x028e45ae89024a4b824c85cc3bccb55fb880515497e72e4f2c60696579a16ff3);
+        bytes32(0xa07925251fdb1d5a2611d8c8f2d21867b6deae9888430e3bddc3fe0fdf03b44e);
 }

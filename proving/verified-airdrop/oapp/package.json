@@ -37,6 +37,7 @@
     "@layerzerolabs/toolbox-hardhat": "~0.2.35",
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
     "@rushstack/eslint-patch": "^1.7.0",
@@ -71,5 +72,8 @@
     "@nomicfoundation/edr": "0.3.5",
     "ethers": "^5.7.2",
     "hardhat-deploy": "^0.12.1"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-verify": "^2.0.8"
   }
 }

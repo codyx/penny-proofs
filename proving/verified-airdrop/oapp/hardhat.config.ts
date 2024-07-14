@@ -5,6 +5,8 @@
 // - Fill in the environment variables
 import 'dotenv/config'
 
+import '@nomicfoundation/hardhat-verify'
+
 import 'hardhat-deploy'
 import 'hardhat-contract-sizer'
 import '@nomiclabs/hardhat-ethers'
@@ -67,6 +69,9 @@ const config: HardhatUserConfig = {
             url: process.env.RPC_URL_AMOY || 'https://polygon-amoy-bor-rpc.publicnode.com',
             accounts,
         },
+    },
+    etherscan: {
+        apiKey: process.env.ETHERSCAN_API_KEY,
     },
     namedAccounts: {
         deployer: {
